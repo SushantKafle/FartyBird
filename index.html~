@@ -1,0 +1,361 @@
+<!DOCTYPE HTML>
+<head>
+	<title>
+		Farty Bird
+	</title>
+	<script src="src/jquery.min.js"></script>
+	<script src="src/script.js"></script>
+	<script src="src/bird.js"></script>
+	<script src="src/bars.js"></script>
+	<script src="src/score.js"></script>
+	
+	<style>
+
+
+	@font-face {
+        font-family: Ubuntu;
+        src: url(fonts/Ubuntu.ttf);
+	}
+
+	
+	h2{
+		color: #ffffff;
+		font-family: "Ubuntu";
+		font-size: 45px;
+		display:block;
+	}
+
+	
+	#myCanvas{
+		background: url(img/background.png);
+	}
+
+	
+
+	#backgroundImage{
+		display:none;
+	}
+	
+	</style>
+	
+	<script>
+		var phase = 0;
+		var birdX = 200;
+		var birdY = 100;
+		var birdS = 50;
+
+		var birdEvent = 0; //0 fall and 1 rise
+
+		var riseCount = 0;
+		var fallCount = 1;
+		
+		var barSpace = 350;
+		
+		var bar1X=200;
+		var bar1Y=0;
+		var bar1H=1000;
+		
+		var bar2X=200+barSpace;
+		var bar2Y=0;
+		var bar2H=1000;
+		
+		var bar3X=200+barSpace*2;
+		var bar3Y=200;
+		var bar3H=200;
+
+		var jump = new Audio('sounds/jump.mp3');
+		var fall = new Audio('sounds/fall.mp3');
+		
+		birdAt = 0;
+		
+		
+				$(document).ready(function(){
+					var c=document.getElementById("myCanvas");
+					var ctx=c.getContext("2d");
+
+					c.addEventListener("click",handleMouse,false);
+					window.addEventListener("keydown",handlePress,true);
+					
+					
+					setInterval(function(){
+						handleMotion();
+					},45);
+
+					if(phase == 0)
+					{
+						initialize(ctx);
+					}
+					
+				});
+				
+
+				function handleMotion()
+				{
+					if(phase != 0)
+					{
+						bar1X -=10;
+						bar2X -=10;
+						bar3X -=10;
+
+						//birdY +=10;
+						if(birdEvent == 1) //rise
+						{
+
+							fallCount = 1;
+
+							birdY = birdY-2-2*(5-riseCount)*(5-riseCount);
+
+							if(riseCount == 4)
+							{
+								riseCount =0;
+								birdEvent = 0;
+							}
+
+							riseCount += 1;
+						}else //Fall
+						{
+							birdY =birdY + 3 + 1.5*fallCount*fallCount;
+
+							fallCount +=0.5;
+						}
+
+
+						playMode();
+					}
+				}
+				
+				function handleMouse(event)
+				{
+					if(phase == 0)
+					{
+						phase = 1;
+						playMode();
+					}
+					
+				}
+
+
+				function handlePress(event)
+				{
+					if(phase == 1 )
+					{
+						birdEvent = 1;	
+						playMode();
+						jump.play();
+					}	
+				}
+				
+				function initialize(context)
+				{
+					highscore = window.name;
+
+					context.fillStyle="brown";
+					context.font="50px Arial";
+					context.fillText( "Start Game",250,100);
+					
+					context.fillStyle="#efdeef";
+					context.font="25px Arial";
+					context.fillText( "<Click to Play>",300,200);
+					context.fillText( "<Press Any Key to jump>",250,250);
+
+				}
+				
+				function playMode()
+				{
+					var c=document.getElementById("myCanvas");
+					var context=c.getContext("2d");
+					clear(context);
+					
+					bar1 = bars;
+					bar2 = bars;
+					bar3 = bars;
+					
+					handleBars();
+
+					bird.draw(context,birdX,birdY);
+					
+					bar1.draw(context,bar1X,bar1Y,bar1H);
+					bar2.draw(context,bar2X,bar2Y,bar2H);
+					bar3.draw(context,bar3X,bar3Y,bar3H);
+
+					
+					score.draw(context);
+					
+					if(!check())
+					{
+						//sleep(5000);
+
+						fall.play();
+
+						context.fillStyle="brown";
+						context.font="50px Arial";
+						context.fillText( "Game Over",250,100);
+
+
+						context.fillStyle="black";
+						context.font="25px Arial";
+						context.fillText( "Your score is: "+score.getScore(),270,300);
+						
+						resetValues();
+						
+						phase = 0;
+
+					}
+						
+				}
+
+				
+				
+				function handleBars()
+				{
+					var h = 170 + 30*Math.random();
+					var y = 50 + 300*Math.random();
+
+					if((bar1X+100) < 0)
+					{
+						bar1X = bar3X + barSpace;
+						bar1H = h;
+						bar1Y = y;
+					}
+					
+					if((bar2X+100) < 0)
+					{
+						bar2X = bar1X + barSpace;
+						bar2H = h;
+						bar2Y = y;
+					}
+					
+					if((bar3X+100) < 0)
+					{
+						bar3X = bar2X + barSpace;
+						bar3H = h;
+						bar3Y = y;
+					}
+					
+					
+				
+				}
+				
+				
+				function resetValues()
+				{
+					score.resetVal();
+					birdX = 200;
+					birdY = 100;
+		
+					bar1X=200;
+					bar1Y=0;
+					bar1H=1000;
+					
+					bar2X=200 + barSpace;
+					bar2Y=0;
+					bar2H=1000;
+					
+					bar3X=200 + barSpace*2;
+					bar3Y=200;
+					bar3H=200;
+
+					phase = 0;
+		
+
+					birdEvent = 0; //0 fall and 1 rise
+
+					riseCount = 0;
+					fallCount = 1;
+					
+				}
+
+				
+				function check()
+				{
+					if (((birdX+birdS) > bar1X) && ((birdX+birdS) < (bar1X+100)))
+					{
+						if(birdAt != 1)
+						{
+							score.increase();
+							birdAt = 1;
+						}
+					
+						if((birdY > bar1Y) && ((birdY+birdS) < (bar1Y+bar1H)))
+							return true;
+						else 
+							return false;
+							
+					}else if (((birdX+birdS) > bar2X) && ((birdX+birdS) < (bar2X+100)))
+					{
+						if(birdAt != 2)
+						{
+							score.increase();
+							birdAt = 2;
+						}
+					
+						if((birdY > bar2Y) && ((birdY+birdS) < (bar2Y+bar2H)))
+							return true;
+						else
+							return false;
+					}else if (((birdX+birdS) > bar3X) && ((birdX+birdS) < (bar3X+100)))
+					{
+						if(birdAt != 3)
+						{
+							score.increase();
+							birdAt = 3;
+						}					
+
+						if((birdY > bar3Y) && ((birdY+birdS) < (bar3Y+bar3H)))
+							return true;
+						else
+							return false;
+					}
+
+					if((birdY+birdS) > 500)
+						return false;
+						
+					return true;
+				}
+				
+				function clear(context)
+				{
+					var img=document.getElementById("backgroundImage");
+					context.drawImage(img,0,0);
+				}
+				
+	</script>
+</head>
+
+<body bgcolor="#121212">
+	<script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '228714080660879',
+          xfbml      : true,
+          version    : 'v2.0'
+        });
+      };
+
+      (function(d, s, id){
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement(s); js.id = id;
+         js.src = "http://connect.facebook.net/en_US/sdk.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'facebook-jssdk'));
+    </script>
+    
+
+	<center>
+	<table>
+		<tr><td><img id="farty" src="img/farty.png"></img></td>
+		<td><h2>Farty Bird!</h2></td>
+		<td><img id="farty" src="img/farty.png"></img></td>
+	</table>
+	<img id="backgroundImage" src="img/background.png"></img>
+	
+	
+	<div id="divCanvas">
+		<canvas id="myCanvas" width="750" height="500" style="border:2px solid #fff;"></canvas>
+	</div>
+	
+	</center>
+</body>
+
+</html>
