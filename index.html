@@ -52,11 +52,11 @@
 		var barSpace = 350;
 		
 		var bar1X=200;
-		var bar1Y=0;
+		var bar1Y=-1000;
 		var bar1H=1000;
 		
 		var bar2X=200+barSpace;
-		var bar2Y=0;
+		var bar2Y=-1000;
 		var bar2H=1000;
 		
 		var bar3X=200+barSpace*2;
@@ -313,7 +313,7 @@
 							return false;
 					}
 
-					if((birdY+birdS) > 500 && (birdY+birdS)< 600)
+					if((birdY+birdS) > 500)
 						return false;
 						
 					return true;
