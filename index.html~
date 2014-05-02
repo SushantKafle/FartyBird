@@ -30,7 +30,13 @@
 		background: url(img/background.png);
 	}
 
+	#farty1{
+		display:none;
+	}	
 	
+	#farty2{
+		display:none;
+	}
 
 	#backgroundImage{
 		display:none;
@@ -43,6 +49,8 @@
 		var birdX = 200;
 		var birdY = 100;
 		var birdS = 50;
+		
+		var birdDead = 0;
 
 		var birdEvent = 0; //0 fall and 1 rise
 
@@ -52,12 +60,12 @@
 		var barSpace = 350;
 		
 		var bar1X=200;
-		var bar1Y=0;
-		var bar1H=1000;
+		var bar1Y=-1000;
+		var bar1H=10000;
 		
 		var bar2X=200+barSpace;
-		var bar2Y=0;
-		var bar2H=1000;
+		var bar2Y=-1000;
+		var bar2H=10000;
 		
 		var bar3X=200+barSpace*2;
 		var bar3Y=200;
@@ -128,6 +136,7 @@
 				{
 					if(phase == 0)
 					{
+						birdDead = 0;
 						phase = 1;
 						playMode();
 					}
@@ -135,21 +144,50 @@
 				}
 
 
-				function handlePress(event)
+				function handlePress(e)
 				{
+					var evtobj=window.event? event : e 
+					var unicode=evtobj.charCode? evtobj.charCode : evtobj.keyCode
+					var actualkey=String.fromCharCode(unicode)
+					
+					
 					if(phase == 1 )
 					{
 						birdEvent = 1;	
 						playMode();
 						jump.play();
-					}	
+					}
+					
+					
+
+					if(birdDead == 1 && actualkey == 'F')
+					{	
+						var publish = {
+						  method: 'feed',
+						  message: 'Sharing the score',
+						  name: 'Farty Bird',
+						  caption: 'Your Score is '+score.getScore(),
+						  description: (
+							  'A simple game inspired from Flappy Bird'
+						  ),
+						  link: 'http://kaflesushant.com.np/FartyBird',
+						  picture: 'http://kaflesushant.com.np/FartyBird/img/farty.png',
+						  actions: [
+							{ name: 'farty', link: 'http://kaflesushant.com.np/FartyBird' }
+						  ],
+						  user_message_prompt: 'Share your score on FartyBird'
+						};
+						
+						FB.ui(publish);
+					
+					}
 				}
 				
 				function initialize(context)
 				{
 					highscore = window.name;
 
-					context.fillStyle="brown";
+					context.fillStyle="#ffffff";
 					context.font="50px Arial";
 					context.fillText( "Start Game",250,100);
 					
@@ -187,7 +225,7 @@
 
 						fall.play();
 
-						context.fillStyle="brown";
+						context.fillStyle="#fff";
 						context.font="50px Arial";
 						context.fillText( "Game Over",250,100);
 
@@ -195,6 +233,11 @@
 						context.fillStyle="black";
 						context.font="25px Arial";
 						context.fillText( "Your score is: "+score.getScore(),270,300);
+						
+						context.fillStyle="yellow";
+						context.fillText( "Press 'f' to share your score to facebook",150,350);
+						
+						birdDead = 1;
 						
 						resetValues();
 						
@@ -244,12 +287,12 @@
 					birdY = 100;
 		
 					bar1X=200;
-					bar1Y=0;
-					bar1H=1000;
+					bar1Y=-1000;
+					bar1H=10000;
 					
 					bar2X=200 + barSpace;
-					bar2Y=0;
-					bar2H=1000;
+					bar2Y=-1000;
+					bar2H=10000;
 					
 					bar3X=200 + barSpace*2;
 					bar3Y=200;
@@ -341,7 +384,9 @@
        }(document, 'script', 'facebook-jssdk'));
     </script>
     
-
+	<img id="farty1" src="img/farty1.png"></img>
+	<img id="farty2" src="img/farty2.png"></img>
+	
 	<center>
 	<table>
 		<tr><td><img id="farty" src="img/farty.png"></img></td>
