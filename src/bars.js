@@ -15,7 +15,7 @@ var bars = {
 		winW = $("#myCanvas").width();
 		winH = $("#myCanvas").height();
 		
-		context.fillStyle = "#bebe9e";
+		context.fillStyle = "#9e1e1e";
 		context.fillRect(this.X,0,this.width,this.Y);
 		
 		context.fillRect(this.X,this.Y+this.height,this.width,winH - (this.Y+this.height));
