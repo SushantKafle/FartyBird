@@ -75,6 +75,7 @@
 
 		var jump = new Audio('sounds/jump.mp3');
 		var fall = new Audio('sounds/fall.mp3');
+		var ding = new Audio('sounds/ding.mp3');
 		
 		birdAt = 0;
 		
@@ -320,6 +321,7 @@
 						if(birdAt != 1)
 						{
 							score.increase();
+							ding.play();
 							birdAt = 1;
 						}
 					
@@ -333,6 +335,7 @@
 						if(birdAt != 2)
 						{
 							score.increase();
+							ding.play();
 							birdAt = 2;
 						}
 					
@@ -345,6 +348,7 @@
 						if(birdAt != 3)
 						{
 							score.increase();
+							ding.play();
 							birdAt = 3;
 						}					
 
