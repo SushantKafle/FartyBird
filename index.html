@@ -70,6 +70,8 @@
 		var bar3X=200+barSpace*2;
 		var bar3Y=200;
 		var bar3H=200;
+		
+		var scoreValue=0;
 
 		var jump = new Audio('sounds/jump.mp3');
 		var fall = new Audio('sounds/fall.mp3');
@@ -166,7 +168,7 @@
 						  method: 'feed',
 						  message: 'Sharing the score',
 						  name: 'Farty Bird',
-						  caption: 'Your Score is '+score.getScore(),
+						  caption: 'Your Score is '+scoreValue,
 						  description: (
 							  'A simple game inspired from Flappy Bird'
 						  ),
@@ -236,6 +238,8 @@
 						
 						context.fillStyle="yellow";
 						context.fillText( "Press 'f' to share your score to facebook",150,350);
+						
+						scoreValue = score.getScore();
 						
 						birdDead = 1;
 						
